@@ -1,12 +1,14 @@
 <?php
 
-/* Database Configuration. Add your details below */
+// Database Configuration. Add your details below
+// We know that "db_user" and "db_pass" are in cleartext here ;-)
+// It's only for an educational purpose.
 
 $dbOptions = array(
-	'db_host' => '',
-	'db_user' => '',
-	'db_pass' => '',
-	'db_name' => ''
+	'db_host' => 'localhost',
+	'db_user' => 'CookieMonster',
+	'db_pass' => 'WrongPassNoCookie!',
+	'db_name' => 'aitec_webchat'
 );
 
 /* Database Config End */
