@@ -26,8 +26,8 @@ _Source: "02b.PHP_Projekt_v4.pdf"_
 - [ ] Install a stable input validation for chat-messages (For security and stuff)
 
 Free for fun:
-- [ ] Remove dependencies from online-libraries. As an example: Loading jQuery-Files directly from Google.
-- [ ] Explore the magic about Gravatars and why they exists.
+- [x] Remove dependencies from online-libraries. As an example: Remove loading jQuery-Files directly from Google. _(2017.11.18)_
+- [x] Explore the magic about Gravatars and why they exists. _(2017.11.18)_
 
 Own stuff:
 - [ ] Cleaning code
