@@ -5,7 +5,10 @@
 
 body{
 	color:#eee;
-	background:url('../img/page_bg.jpg') repeat-x #323232;
+    background-image: url("../img/tile.png"), url("../img/background.jpg");
+    background-attachment: fixed, fixed;
+    background-size: auto, cover;
+    background-repeat: repeat, no-repeat;
 	font:15px Calibri,Arial,sans-serif;
 	border-top:5px solid #212121;
 }

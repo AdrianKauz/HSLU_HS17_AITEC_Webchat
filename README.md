@@ -11,7 +11,7 @@ End time for this exercise: **2017.11.29**
 1. Make sure you have installed the latest version of Apache, PHP and phpMyAdmin
 2. Use the provided virtual machine "**AITEC v1.1 HS2016**", which you can find on the ["HSLU ILIAS Repository"](https://elearning.hslu.ch/ilias), if you won't to setup your own webserver. 
 3. Copy all the files into your webfolder
-4. Run SQL-Script ["db_prepare_database.sql"](sql/prepare_database.sql)
+4. Run SQL-Script ["db_prepare_database.sql"](setup/prepare_database.sql)
 5. Test conncetion with ["db_connection_test.php"](php/db_connection_test.php)
 6. Now it should work. If not, your problem :baby_chick: 
 

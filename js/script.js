@@ -170,9 +170,9 @@ var chat = {
 			
 			case 'chatLine':
 				arr = [
-					'<div class="chat chat-',params.id,' rounded"><span class="gravatar"><img src="',params.gravatar,
+					'<div class="chat chat-',params.id,'"><span class="gravatar"><img src="',params.gravatar,
 					'" width="23" height="23" onload="this.style.visibility=\'visible\'" />','</span><span class="author">',params.author,
-					':</span><span class="text">',params.text,'</span><span class="time">',params.time,'</span></div>'];
+					'</span><span class="time">',params.time,'</span><span class="text">',params.text,'</span></div>'];
 			break;
 			
 			case 'user':
