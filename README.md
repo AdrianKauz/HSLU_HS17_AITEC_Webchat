@@ -9,7 +9,7 @@ End time for this exercise: **2017.11.29**
 ### Setup the webchat
 
 1. Make sure you have installed the latest version of Apache, PHP and phpMyAdmin
-2. Use the provided virtual machine "**AITEC v1.1 HS2016**", which you can find on the ["HSLU ILIAS Repository"](https://elearning.hslu.ch/ilias), if you won't to setup your own webserver. 
+2. Use the provided virtual machine "**AITEC v1.1 HS2016**", if you won't setup your own webserver. You can find the image on the ["HSLU ILIAS Repository"](https://elearning.hslu.ch/ilias). 
 3. Copy all the files into your webfolder
 4. Run SQL-Script ["db_prepare_database.sql"](setup/prepare_database.sql)
 5. Test conncetion with ["db_connection_test.php"](php/db_connection_test.php)
@@ -23,7 +23,7 @@ _Source: "02b.PHP_Projekt_v4.pdf"_
 - [ ] Admin can activate new users
 - [ ] Admin can block an user
 - [ ] Admin can remove an user
-- [ ] Install a stable input validation for chat-messages (For security and stuff)
+- [x] Install a stable input validation for chat-messages (For security and stuff) _(2017.11.19)_
 
 Free for fun:
 - [x] Remove dependencies from online-libraries. As an example: Remove loading jQuery-Files directly from Google. _(2017.11.18)_
@@ -32,3 +32,6 @@ Free for fun:
 Own stuff:
 - [ ] Cleaning code
 - [ ] Some "eye candy" stuff
+
+### Notes
+- Extended the "text"-field from varchar(255) to varchar(2048). This should be enough to save 255 char-text lines with activated HTML-Entity-Encoding.<br>As an example: "·" takes 8 characters as HTML-Entity.
