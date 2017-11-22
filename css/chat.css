@@ -4,22 +4,63 @@
     src: url('../font/Roboto-Regular.woff2');
 }
 
+#LoginContainer{
+    margin: -400px 0 0 -400px;
+    width: 800px;
+    height: 600px;
+    border: 1px solid black;
+    background-color: rgb(20,20,20);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    visibility: hidden;
+}
+
+#LoginMessage{
+    padding-bottom: 10px;
+    font-family: Roboto-Regular, Helvetica, sans-serif;
+    font-size: 20px;
+}
+
+.LoginIcon{
+    margin-bottom: 2px;
+    display: inline-block;
+    min-width: 40px;
+    min-height: 40px;
+    background-color: rgb(30,30,30);
+    text-align: center;
+    vertical-align: middle;
+    font-family: Roboto-Regular, Helvetica, sans-serif;
+    font-size: 20px;
+    line-height: 40px;
+}
+
+#Login{
+    position: relative;
+    height: 50%;
+    width: 50%;
+    top: 25%;
+    left: 25%;
+    border: 1px solid red;
+}
+
 /* Border around the chat container */
 #invisibleBorder{
-    box-sizing: border-box;
-    max-width: 1024px;
-    margin: 100px auto;
-    position: relative;
-    padding: 10px;
+    margin: -400px 0 0 -400px;
+    width: 800px;
+    height: 600px;
+    border: 1px solid black;
+    position: absolute;
+    top: 50%;
+    left: 50%;
 }
 
 /* Main chat container */
 
 #chatContainer{
-    padding: 0px;
     box-shadow: 0px 0px 10px 1px #000000;
-    border: 2px solid black;
     background-color: rgba(0,0,0,0.7);
+    height: 600px;
 }
 
 
@@ -296,4 +337,14 @@ p.noChats,
     color:#fff;
     
     text-shadow:1px 1px 0 #940f0f;
+}
+
+/* Animations */
+@keyframes fadeIn{
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }

@@ -8,23 +8,34 @@ class Chat{
 		if(!$name || !$email){
 			throw new Exception('Fill in all the required fields.');
 		}
-		
+
 		if(!filter_input(INPUT_POST,'email',FILTER_VALIDATE_EMAIL)){
 			throw new Exception('Your email is invalid.');
 		}
-		
+
 		// Preparing the gravatar hash:
 		$gravatar = md5(strtolower(trim($email)));
-		
-		$user = new ChatUser(array(
-			'name'		=> $name,
-			'gravatar'	=> $gravatar
-		));
-		
-		// The save method returns a MySQLi object
-		if($user->save()->affected_rows != 1){
-			throw new Exception('This nick is in use.');
-		}
+
+		// Prepare user
+        $user = new ChatUser(array(
+            'name'		=> $name,
+            'is_admin'	=> 0,
+            'gravatar'	=> $gravatar
+        ));
+
+        // Check if user doesn't exist on the DB
+        if(!$user->exists()){
+            // Check if admin exists, if not: First user is automatically an admin
+            $result = DB::query('SELECT COUNT(*) as cnt FROM webchat_users WHERE is_admin = 1')->fetch_object()->cnt;
+            $user['is_admin'] = ($result == 0) ? 1 : 0;
+
+            // The save method returns a MySQLi object
+            if($user->save()->affected_rows != 1){
+                throw new Exception('This nick is in use.');
+            }
+        } else {
+            // Check here if user is an admin (Don't know if this works!) (2017.11.22)
+        }
 		
 		$_SESSION['user']	= array(
 			'name'		=> $name,
@@ -84,7 +95,15 @@ class Chat{
 			'insertID'	=> $insertID
 		);
 	}
-	
+
+	public static function countUsers(){
+        $result = DB::query('SELECT COUNT(*) as cnt FROM webchat_users') -> fetch_object() -> cnt;
+
+        return array(
+            'total' => $result
+        );
+    }
+
 	public static function getUsers(){
 		if($_SESSION['user']['name']){
 			$user = new ChatUser(array('name' => $_SESSION['user']['name']));
@@ -94,7 +113,7 @@ class Chat{
 		// Deleting chats older than 5 minutes and users inactive for 30 seconds
 		
 		DB::query("DELETE FROM webchat_lines WHERE ts < SUBTIME(NOW(),'0:5:0')");
-		DB::query("DELETE FROM webchat_users WHERE last_activity < SUBTIME(NOW(),'0:0:30')");
+		DB::query("DELETE FROM webchat_users WHERE is_admin = 0 AND last_activity < SUBTIME(NOW(),'0:0:30')");
 		
 		$result = DB::query('SELECT * FROM webchat_users ORDER BY name ASC LIMIT 18');
 		

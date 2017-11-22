@@ -33,32 +33,34 @@ try{
 	$response = array();
 	
 	// Handling the supported actions:
-	
 	switch($_GET['action']){
-		
-		case 'login':
+        case 'countUsers':
+            $response = Chat::countUsers();
+            break;
+
+	    case 'login':
 			$response = Chat::login($_POST['name'],$_POST['email']);
-		break;
+		    break;
 		
 		case 'checkLogged':
 			$response = Chat::checkLogged();
-		break;
+		    break;
 		
 		case 'logout':
 			$response = Chat::logout();
-		break;
+		    break;
 		
 		case 'submitChat':
 			$response = Chat::submitChat($_POST['chatText']);
-		break;
+		    break;
 		
 		case 'getUsers':
 			$response = Chat::getUsers();
-		break;
+		    break;
 		
 		case 'getChats':
 			$response = Chat::getChats($_GET['lastID']);
-		break;
+		    break;
 		
 		default:
 			throw new Exception('Wrong action');

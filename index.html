@@ -10,38 +10,45 @@
 </head>
 
 <body>
-<div id="invisibleBorder">
-    <div id="chatContainer">
-        <div id="chatTopBar"></div>
-        <div id="chatMiddleBar">
-            <div id="chatLineHolder"></div>
-            <div id="chatUsers"></div>
+    <div id="invisibleBorder">
+        <div id="chatContainer">
+            <div id="chatTopBar"></div>
+
+            <div id="chatMiddleBar">
+                <div id="chatLineHolder"></div>
+                <div id="chatUsers"></div>
+            </div>
+
+            <div id="chatBottomBar" class="rounded">
+                <div class="tip"></div>
+
+                <form id="submitForm" method="post" action="">
+                    <input id="chatText" name="chatText" class="rounded" maxlength="255" />
+                    <input type="submit" class="blueButton" value="Submit" />
+                </form>
+            </div>
         </div>
-        <div id="chatBottomBar" class="rounded">
-            <div class="tip"></div>
+    </div>
 
+    <div id="LoginContainer">
+        <div id="Login">
+            <div id="LoginMessage" >Welcome user!</div>
             <form id="loginForm" method="post" action="">
-                <input id="name" name="name" class="rounded" maxlength="16" />
-                <input id="email" name="email" class="rounded" />
-                <input type="submit" class="blueButton" value="Login" />
-            </form>
-
-            <form id="submitForm" method="post" action="">
-                <input id="chatText" name="chatText" class="rounded" maxlength="255" />
-                <input type="submit" class="blueButton" value="Submit" />
+                <p><span class="LoginIcon">A</span><input id="name" name="name" maxlength="16" /></p>
+                <p><span class="LoginIcon">C</span><input id="email" name="email" /></p>
+                <p><input type="submit" class="blueButton" value="Login" /></p>
             </form>
         </div>
     </div>
-</div>
 
-<div id="footer">
-	<div class="tri"></div>
-	<h1>Making an AJAX Web Chat With PHP and jQuery</h1>
-</div>
+    <div id="footer">
+        <div class="tri"></div>
+        <h1>Making an AJAX Web Chat With PHP and jQuery</h1>
+    </div>
 
-<script src="js/jQuery/1.4.2/jquery.min.js"></script>
-<script src="js/jScrollPane/jquery.mousewheel.js"></script>
-<script src="js/jScrollPane/jScrollPane.min.js"></script>
-<script src="js/script.js"></script>
+    <script src="js/jQuery/1.4.2/jquery.min.js"></script>
+    <script src="js/jScrollPane/jquery.mousewheel.js"></script>
+    <script src="js/jScrollPane/jScrollPane.min.js"></script>
+    <script src="js/script.js"></script>
 </body>
 </html>

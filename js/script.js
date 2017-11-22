@@ -1,21 +1,18 @@
 $(document).ready(function(){
-	
 	// Run the init method on document ready:
 	chat.init();
-	
 });
 
+var isAdmin = false;
+
 var chat = {
-	
 	// data holds variables for use in the class:
-	
 	data : {
 		lastID 		: 0,
 		noActivity	: 0
 	},
 	
 	// Init binds event listeners and sets up timers:
-	
 	init : function(){
 		
 		// Using the defaultText jQuery plugin, included at the bottom:
@@ -24,41 +21,39 @@ var chat = {
 		
 		// Converting the #chatLineHolder div into a jScrollPane,
 		// and saving the plugin's API in chat.data:
-		
 		chat.data.jspAPI = $('#chatLineHolder').jScrollPane({
 			verticalDragMinHeight: 12,
 			verticalDragMaxHeight: 12
 		}).data('jsp');
 		
-		// We use the working variable to prevent
-		// multiple form submissions:
-		
+		// We use the working variable to prevent multiple form submissions:
 		var working = false;
 		
 		// Logging a person in the chat:
-		
 		$('#loginForm').submit(function(){
 			
-			if(working) return false;
+			if(working){
+                return false;
+			}
+
 			working = true;
 			
-			// Using our chatPOST wrapper function
-			// (defined in the bottom):
-			
+			// Using our chatPOST wrapper function (defined in the bottom):
 			$.chatPOST('login',$(this).serialize(),function(r){
 				working = false;
 				
 				if(r.error){
 					chat.displayError(r.error);
 				}
-				else chat.login(r.name,r.gravatar);
+				else{
+					chat.login(r.name,r.gravatar);
+                }
 			});
 			
 			return false;
 		});
 		
 		// Submitting a new chat entry:
-		
 		$('#submitForm').submit(function(){
 			
 			var text = $('#chatText').val();
@@ -82,12 +77,10 @@ var chat = {
 			// Using our addChatLine method to add the chat
 			// to the screen immediately, without waiting for
 			// the AJAX request to complete:
-			
 			chat.addChatLine($.extend({},params));
 			
 			// Using our chatPOST wrapper method to send the chat
 			// via a POST AJAX request:
-			
 			$.chatPOST('submitChat',$(this).serialize(),function(r){
 				working = false;
 				
@@ -102,7 +95,6 @@ var chat = {
 		});
 		
 		// Logging the user out:
-		
 		$('a.logoutButton').live('click',function(){
 			
 			$('#chatTopBar > span').fadeOut(function(){
@@ -119,15 +111,15 @@ var chat = {
 		});
 		
 		// Checking whether the user is already logged (browser refresh)
-		
 		$.chatGET('checkLogged',function(r){
 			if(r.logged){
 				chat.login(r.loggedAs.name,r.loggedAs.gravatar);
+			} else {
+                $('#LoginContainer').css({"visibility": "visible", "animation": "fadeIn 1s", "-webkit-animation": "fadeIn 1s"});
 			}
 		});
 		
 		// Self executing timeout functions
-		
 		(function getChatsTimeoutFunction(){
 			chat.getChats(getChatsTimeoutFunction);
 		})();
@@ -135,28 +127,30 @@ var chat = {
 		(function getUsersTimeoutFunction(){
 			chat.getUsers(getUsersTimeoutFunction);
 		})();
-		
+
+		// Count registered users. If none, set LoggingContainer to admin-mode
+        $.chatGET('countUsers',function(r){
+        	if(r.total == 0){
+        		isAdmin = true;
+                $('#LoginMessage').html("Greetings Administrator!");
+			}
+        });
 	},
-	
-	// The login method hides displays the
-	// user's login data and shows the submit form
-	
+
+
+	// The login method hides displays the user's login data and shows the submit form:
 	login : function(name,gravatar){
-		
 		chat.data.name = name;
 		chat.data.gravatar = gravatar;
 		$('#chatTopBar').html(chat.render('loginTopBar',chat.data));
-		
-		$('#loginForm').fadeOut(function(){
-			$('#submitForm').fadeIn();
-			$('#chatText').focus();
-		});
-		
+
+        $('#LoginContainer').fadeOut(function(){
+            $('#submitForm').fadeIn();
+        	$('#chatText').focus();
+        });
 	},
 	
-	// The render method generates the HTML markup 
-	// that is needed by the other methods:
-	
+	// The render method generates the HTML markup that is needed by the other methods:
 	render : function(template,params){
 		
 		var arr = [];
@@ -183,26 +177,20 @@ var chat = {
 			break;
 		}
 		
-		// A single array join is faster than
-		// multiple concatenations
-		
+		// A single array join is faster than multiple concatenations
 		return arr.join('');
-		
 	},
 	
 	// The addChatLine method ads a chat entry to the page
-	
 	addChatLine : function(params){
 		
 		// All times are displayed in the user's timezone
-		
 		var d = new Date();
 		if(params.time) {
 			
 			// PHP returns the time in UTC (GMT). We use it to feed the date
 			// object and later output it in the user's timezone. JavaScript
 			// internally converts it for us.
-			
 			d.setUTCHours(params.time.hours,params.time.minutes);
 		}
 		
@@ -219,7 +207,6 @@ var chat = {
 		if(!chat.data.lastID){
 			// If this is the first chat, remove the
 			// paragraph saying there aren't any:
-			
 			$('#chatLineHolder p').remove();
 		}
 		
@@ -233,17 +220,13 @@ var chat = {
 		}
 		else chat.data.jspAPI.getContentPane().append(markup);
 		
-		// As we added new content, we need to
-		// reinitialise the jScrollPane plugin:
-		
+		// As we added new content, we need to reinitialise the jScrollPane plugin:
 		chat.data.jspAPI.reinitialise();
 		chat.data.jspAPI.scrollToBottom(true);
 		
 	},
 	
-	// This method requests the latest chats
-	// (since lastID), and adds them to the page.
-	
+	// This method requests the latest chats (since lastID), and adds them to the page.
 	getChats : function(callback){
 		$.chatGET('getChats',{lastID: chat.data.lastID},function(r){
 			
@@ -256,9 +239,7 @@ var chat = {
 				chat.data.lastID = r.chats[i-1].id;
 			}
 			else{
-				// If no chats were received, increment
-				// the noActivity counter.
-				
+				// If no chats were received, increment the noActivity counter.
 				chat.data.noActivity++;
 			}
 			
@@ -266,9 +247,7 @@ var chat = {
 				chat.data.jspAPI.getContentPane().html('<p class="noChats">No chats yet</p>');
 			}
 			
-			// Setting a timeout for the next request,
-			// depending on the chat activity:
-			
+			// Setting a timeout for the next request, depending on the chat activity:
 			var nextRequest = 1000;
 			
 			// 2 seconds
@@ -288,9 +267,14 @@ var chat = {
 			setTimeout(callback,nextRequest);
 		});
 	},
-	
+
+    countUsers : function(){
+	  $.chatGET('countUsers',function(r){
+	      return r.total;
+      });
+    },
+
 	// Requesting a list with all the users.
-	
 	getUsers : function(callback){
 		$.chatGET('getUsers',function(r){
 			
@@ -320,7 +304,6 @@ var chat = {
 	},
 	
 	// This method displays an error message on the top of the page:
-	
 	displayError : function(msg){
 		var elem = $('<div>',{
 			id		: 'chatErrorMessage',
@@ -342,7 +325,6 @@ var chat = {
 };
 
 // Custom GET & POST wrappers:
-
 $.chatPOST = function(action,data,callback){
 	$.post('php/ajax.php?action='+action,data,callback,'json');
 }
@@ -352,7 +334,6 @@ $.chatGET = function(action,data,callback){
 }
 
 // A custom jQuery method for placeholder text:
-
 $.fn.defaultText = function(value){
 	
 	var element = this.eq(0);
