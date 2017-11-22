@@ -16,18 +16,21 @@ class Chat{
 		// Preparing the gravatar hash:
 		$gravatar = md5(strtolower(trim($email)));
 
-		// Prepare user
+		// Prepare user (Standard is user)
         $user = new ChatUser(array(
             'name'		=> $name,
-            'is_admin'	=> 0,
+            'is_admin'	=> '0',
             'gravatar'	=> $gravatar
         ));
 
         // Check if user doesn't exist on the DB
         if(!$user->exists()){
-            // Check if admin exists, if not: First user is automatically an admin
+            // Check if an admin exists, if not (because of reasons): User is automatically an admin
             $result = DB::query('SELECT COUNT(*) as cnt FROM webchat_users WHERE is_admin = 1')->fetch_object()->cnt;
-            $user['is_admin'] = ($result == 0) ? 1 : 0;
+
+            if(!$result) {
+                $user->setAdmin('1');
+            }
 
             // The save method returns a MySQLi object
             if($user->save()->affected_rows != 1){
@@ -35,6 +38,7 @@ class Chat{
             }
         } else {
             // Check here if user is an admin (Don't know if this works!) (2017.11.22)
+            throw new Exception('User exists)');
         }
 		
 		$_SESSION['user']	= array(

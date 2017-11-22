@@ -96,15 +96,10 @@ var chat = {
 		
 		// Logging the user out:
 		$('a.logoutButton').live('click',function(){
-			
-			$('#chatTopBar > span').fadeOut(function(){
-				$(this).remove();
-			});
-			
-			$('#submitForm').fadeOut(function(){
-				$('#loginForm').fadeIn();
-			});
-			
+            $('#LoginContainer').show();
+            $('#submitForm').hide();
+            $('#chatTopBar > span').remove();
+
 			$.chatPOST('logout');
 			
 			return false;

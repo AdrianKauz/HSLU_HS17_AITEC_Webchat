@@ -28,12 +28,19 @@ class ChatUser extends ChatBase{
 	}
 
 	public function exists(){
-	    return DB::query("
-	    SELECT EXISTS(SELECT 1 
-	                  FROM webchat_users
-	                  WHERE name = '".DB::esc($this->name)."'
-	                  AND gravatar = '".DB::esc($this->gravatar)."')
-	    ")->fetch_object(0);
+	    $result = DB::query("
+	                  SELECT EXISTS(SELECT 1 
+	                                FROM webchat_users
+	                                WHERE name = '".DB::esc($this->name)."'
+	                                AND gravatar = '".DB::esc($this->gravatar)."'
+	                                ) as cnt
+	                  ")->fetch_object()->cnt;
+
+	    return $result;
+    }
+
+    public function setAdmin($newValue){
+	    $this->is_admin = $newValue;
     }
 }
 
