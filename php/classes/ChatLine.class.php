@@ -1,16 +1,19 @@
 <?php
 /* Chat line is used for the chat entries */
 
-class ChatLine extends ChatBase{
-	
-	protected $text = '', $author = '', $gravatar = '';
+class ChatLine extends ChatBase
+{
+	protected $text = '';
+	protected $author = '';
+	protected $gravatar = '';
 
     /*
     ================
     save()
     ================
     */
-	public function save(){
+	public function save()
+    {
 		DB::query("
 			INSERT INTO
 			webchat_lines(

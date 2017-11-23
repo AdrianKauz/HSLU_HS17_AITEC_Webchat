@@ -27,7 +27,7 @@ class DB
 
     /*
     ================
-    inti()
+    init()
     ================
     */
 	public static function init(array $dbOptions)

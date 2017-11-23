@@ -143,6 +143,25 @@ class Chat
 
     /*
     ================
+    userIsAdmin()
+    ================
+    */
+    public static function userIsAdmin()
+    {
+        $result = DB::query("SELECT EXISTS( SELECT 1
+                                                FROM webchat_users
+                                                WHERE name = '".DB::esc($_SESSION['user']['name'])."' 
+                                                AND gravatar = '".DB::esc($_SESSION['user']['gravatar'])."'
+                                                AND is_admin = 1)
+                                AS res")-> fetch_object() -> res;
+
+        return array(
+            'result' => $result
+        );
+    }
+
+    /*
+    ================
     getUsers()
     ================
     */
@@ -169,6 +188,26 @@ class Chat
 			'total' => DB::query('SELECT COUNT(*) as cnt FROM webchat_users WHERE is_active = 1')->fetch_object()->cnt
 		);
 	}
+
+    /*
+    ================
+    getBlockedUsers()
+    ================
+    */
+	public static function getBlockedUsers(){
+        $result = DB::query('SELECT * FROM webchat_users WHERE is_blocked = 1 ORDER BY name ASC LIMIT 18');
+
+        $users = array();
+        while($user = $result->fetch_object()){
+            $user->gravatar = Chat::gravatarFromHash($user->gravatar,30);
+            $users[] = $user;
+        }
+
+        return array(
+            'users' => $users,
+            'total' => DB::query('SELECT COUNT(*) as cnt FROM webchat_users WHERE is_blocked = 1')->fetch_object()->cnt
+        );
+    }
 
     /*
     ================

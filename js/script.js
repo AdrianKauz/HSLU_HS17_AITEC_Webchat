@@ -31,7 +31,6 @@ var chat = {
 		
 		// Logging a person in the chat:
 		$('#loginForm').submit(function(){
-			
 			if(working){
                 return false;
 			}
@@ -46,10 +45,16 @@ var chat = {
 					chat.displayError(r.error);
 				}
 				else{
+                    $.chatGET('userIsAdmin',function(r){
+                        if(r.result == 1){
+                            isAdmin = true;
+                        }
+                    });
+
 					chat.login(r.name,r.gravatar);
                 }
 			});
-			
+
 			return false;
 		});
 		
@@ -99,7 +104,7 @@ var chat = {
             $('#LoginContainer').show();
             $('#submitForm').hide();
             $('#chatTopBar > span').remove();
-            $('#name').focus();
+            isAdmin = false;
 
 			$.chatPOST('logout');
 			
@@ -112,7 +117,7 @@ var chat = {
 				chat.login(r.loggedAs.name,r.loggedAs.gravatar);
 			} else {
                 $('#LoginContainer').css({"visibility": "visible", "animation": "fadeIn 1s", "-webkit-animation": "fadeIn 1s"});
-                $('#name').focus();
+                //$('#name').focus();
 			}
 		});
 		
@@ -128,7 +133,6 @@ var chat = {
 		// Count registered users. If none, set LoggingContainer to admin-mode
         $.chatGET('countUsers',function(r){
         	if(r.total == 0){
-        		isAdmin = true;
                 $('#LoginMessage').html("Greetings Administrator!");
 			}
         });
@@ -141,6 +145,10 @@ var chat = {
 		$('#chatTopBar').html(chat.render('loginTopBar',chat.data));
 
         $('#LoginContainer').fadeOut(function(){
+            if(isAdmin){
+                $('#chatUsersAdminContainer').fadeIn();
+            }
+
             $('#submitForm').fadeIn();
         	$('#chatText').focus();
         });
@@ -298,6 +306,35 @@ var chat = {
 			setTimeout(callback,15000);
 		});
 	},
+
+    // Requesting a list with all the users.
+    getBlockedUsers : function(callback){
+        $.chatGET('getUsers',function(r){
+
+            var users = [];
+
+            for(var i=0; i< r.users.length;i++){
+                if(r.users[i]){
+                    users.push(chat.render('user',r.users[i]));
+                }
+            }
+
+            var message = '';
+
+            if(r.total<1){
+                message = 'No one is online';
+            }
+            else {
+                message = r.total+' '+(r.total == 1 ? 'person':'people')+' online';
+            }
+
+            users.push('<p class="count">'+message+'</p>');
+
+            $('#chatUsers').html(users.join(''));
+
+            setTimeout(callback,15000);
+        });
+    },
 	
 	// This method displays an error message on the top of the page:
 	displayError : function(msg){

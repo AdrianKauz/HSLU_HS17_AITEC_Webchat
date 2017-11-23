@@ -1,9 +1,3 @@
-/* Fonts */
-@font-face {
-    font-family: Roboto-Regular;
-    src: url('../font/Roboto-Regular.woff2');
-}
-
 #LoginContainer{
     margin: -400px 0 0 -400px;
     width: 800px;
@@ -24,7 +18,6 @@
     background-color: rgb(30,30,30);
     text-align: center;
     vertical-align: middle;
-    font-family: Roboto-Regular, Helvetica, sans-serif;
     font-size: 20px;
     line-height: 40px;
 }
@@ -49,7 +42,6 @@
 
 #LoginMessage{
     padding-bottom: 10px;
-    font-family: Roboto-Regular, Helvetica, sans-serif;
     font-size: 20px;
     color: rgb(200, 200, 200);
     text-shadow: -1px -1px rgb(0, 0, 0);
@@ -80,7 +72,6 @@ input[type=text]{
     color: rgb(200, 200, 200);
     width: 100%;
     border: none;
-    font-family: Roboto-Regular, Helvetica, sans-serif;
     text-align: center;
     transition: background-color 0.5s ease-out;
     outline: none;
@@ -116,7 +107,6 @@ input[type=text]:hover{
     background: #f78d1d;
     background: -webkit-gradient(linear, left top, left bottom, from(#faa51a), to(#f47a20));
     background: -moz-linear-gradient(top,  #faa51a,  #f47a20);
-    font-family: Roboto-Regular, Helvetica, sans-serif;
     font-size: 15px;
     transition: color 0.5s ease-out;
 }
@@ -166,7 +156,6 @@ input[type=text]:hover{
     position:absolute;
     top:10px;
     left:40px;
-    font-family: Roboto-Regular, Helvetica, sans-serif;
 }
 
 #chatTopBar img{
@@ -190,7 +179,6 @@ input[type=text]:hover{
     width:80%;
     margin-bottom:20px;
     background-color: rgba(255,255,255,0.2);
-    font-family: Roboto-Regular, Helvetica, sans-serif;
     text-shadow: 2px 2px 2px #000000;
 }
 
@@ -253,10 +241,18 @@ input[type=text]:hover{
 
 
 /* Chat User Area */
-#chatUsers{
+#chatUserContainer{
     background-color: rgba(0,0,0,0.3);
     height: 100%;
     width:19.0%;
+    display:flex;
+    flex-direction: column;
+}
+
+#chatUsers{
+    background-color: rgba(0,0,0,0.3);
+    margin-bottom: 10px;
+    width: 100%;
     float: right;
 }
 
@@ -273,6 +269,19 @@ input[type=text]:hover{
     border:1px solid #444444;
     display:block;
     visibility:hidden;
+}
+
+#chatUsersAdminContainer{
+    height: 50%;
+    display: none;
+    /*border: 1px solid red;*/
+}
+
+#adminContainerTitle{
+    background: rgba(0,0,0,0.5);
+    padding: 5px;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
 }
 
 

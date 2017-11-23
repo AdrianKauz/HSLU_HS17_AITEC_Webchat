@@ -16,7 +16,13 @@
 
             <div id="chatMiddleBar">
                 <div id="chatLineHolder"></div>
-                <div id="chatUsers"></div>
+                <div id="chatUserContainer">
+                    <div id="chatUsers"></div>
+                    <div id="chatUsersAdminContainer">
+                        <div id="adminContainerTitle">Admin Area</div>
+                        <div id="blockedUsers"></div>
+                    </div>
+                </div>
             </div>
 
             <div id="chatBottomBar" class="rounded">
@@ -35,8 +41,8 @@
             <div id="LoginMessage" >Welcome user!</div>
             <form id="loginForm" method="post" action="">
                 <div id="inputField">
-                    <input type="text" id="name" name="name" maxlength="16" />
-                    <input type="text" id="email" name="email" />
+                    <input type="text" id="name" name="name" autocomplete="off" maxlength="16" />
+                    <input type="text" id="email" name="email" autocomplete="off" />
                 </div>
                 <input type="submit" id="LoginButton" value="Login" />
             </form>

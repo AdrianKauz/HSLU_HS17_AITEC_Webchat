@@ -56,7 +56,15 @@ try{
 		case 'getUsers':
 			$response = Chat::getUsers();
 		    break;
-		
+
+        case 'userIsAdmin':
+            $response = Chat::userIsAdmin();
+            break;
+
+        case 'getBlockedUsers':
+            $response = Chat::getBlockedUsers();
+            break;
+
 		case 'getChats':
 			$response = Chat::getChats($_GET['lastID']);
 		    break;
