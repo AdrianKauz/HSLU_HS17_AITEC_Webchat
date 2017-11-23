@@ -26,7 +26,6 @@ session_name('webchat');
 session_start();
 
 try{
-	
 	// Connecting to the database
 	DB::init($dbOptions);
 	

@@ -16,12 +16,6 @@
     visibility: hidden;
 }
 
-#LoginMessage{
-    padding-bottom: 10px;
-    font-family: Roboto-Regular, Helvetica, sans-serif;
-    font-size: 20px;
-}
-
 .LoginIcon{
     margin-bottom: 2px;
     display: inline-block;
@@ -41,7 +35,102 @@
     width: 50%;
     top: 25%;
     left: 25%;
-    border: 1px solid red;
+    border: 1px solid rgb(0, 0, 0);
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px 1px rgb(40, 40, 40);
+    background:url('../img/noise.png') repeat rgb(30, 30, 30);
+}
+
+#loginForm {
+    align-content: center;
+    text-align: center;
+    vertical-align: middle;
+}
+
+#LoginMessage{
+    padding-bottom: 10px;
+    font-family: Roboto-Regular, Helvetica, sans-serif;
+    font-size: 20px;
+    color: rgb(200, 200, 200);
+    text-shadow: -1px -1px rgb(0, 0, 0);
+    height: 30px;
+    text-align: center;
+    line-height: 40px;
+    border-bottom: 1px solid rgb(20, 20, 20);
+    text-transform: uppercase;
+    background: rgba(10, 10, 10, 0.3);
+}
+
+#inputField{
+    border: 1px solid rgb(0, 0, 0);
+    width: 80%;
+    border-radius: 10px;
+    margin-top: 25px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0px 0px 10px 2px rgb(10, 10, 10) inset;
+    background: rgba(20, 20, 20, 0.5);
+}
+
+input[type=text]{
+    font-size: 15px;
+    background: none;
+    box-sizing: border-box;
+    padding: 12px 20px;
+    color: rgb(200, 200, 200);
+    width: 100%;
+    border: none;
+    font-family: Roboto-Regular, Helvetica, sans-serif;
+    text-align: center;
+    transition: background-color 0.5s ease-out;
+    outline: none;
+}
+
+input[type=text]:focus{
+    color: rgb(200, 140, 62);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+
+input[type=text]:hover{
+    color: rgb(255, 190, 67);
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+}
+
+#LoginButton{
+    align-self: center;
+    outline: none;
+    text-decoration: none;
+    text-align: center;
+    width: 60%;
+    border-radius: 5px;
+    text-shadow: 1px 1px rgba(0, 0, 0, .5);
+    margin-top: 25px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 40px;
+    box-shadow: 0px 0px 1px 2px rgba(0,0,0,.8);
+    color: #fef4e9;
+    border: solid 1px #da7c0c;
+    background: #f78d1d;
+    background: -webkit-gradient(linear, left top, left bottom, from(#faa51a), to(#f47a20));
+    background: -moz-linear-gradient(top,  #faa51a,  #f47a20);
+    font-family: Roboto-Regular, Helvetica, sans-serif;
+    font-size: 15px;
+    transition: color 0.5s ease-out;
+}
+
+#LoginButton:hover{
+    background: #f47c20;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f88e11), to(#f06015));
+    background: -moz-linear-gradient(top,  #f88e11,  #f06015);
+}
+
+#LoginButton:active{
+    color: #fcd3a5;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f47a20), to(#faa51a));
+    background: -moz-linear-gradient(top,  #f47a20,  #faa51a);
 }
 
 /* Border around the chat container */

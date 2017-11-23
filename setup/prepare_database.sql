@@ -41,8 +41,10 @@ CREATE TABLE `webchat_lines` (
 CREATE TABLE `webchat_users` (
   `id`            int(10)     unsigned NOT NULL auto_increment,
   `name`          varchar(16) NOT NULL,
-  `is_admin`      int(1)      NOT NULL,
   `gravatar`      varchar(32) NOT NULL,
+  `is_active`     int(1)      DEFAULT 0,
+  `is_admin`      int(1)      DEFAULT 0,
+  `is_blocked`    int(1)      DEFAULT 0,
   `last_activity` timestamp   NOT NULL default CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`),

@@ -99,6 +99,7 @@ var chat = {
             $('#LoginContainer').show();
             $('#submitForm').hide();
             $('#chatTopBar > span').remove();
+            $('#name').focus();
 
 			$.chatPOST('logout');
 			
@@ -111,6 +112,7 @@ var chat = {
 				chat.login(r.loggedAs.name,r.loggedAs.gravatar);
 			} else {
                 $('#LoginContainer').css({"visibility": "visible", "animation": "fadeIn 1s", "-webkit-animation": "fadeIn 1s"});
+                $('#name').focus();
 			}
 		});
 		
@@ -131,7 +133,6 @@ var chat = {
 			}
         });
 	},
-
 
 	// The login method hides displays the user's login data and shows the submit form:
 	login : function(name,gravatar){

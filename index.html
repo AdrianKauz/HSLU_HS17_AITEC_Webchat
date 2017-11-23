@@ -34,9 +34,11 @@
         <div id="Login">
             <div id="LoginMessage" >Welcome user!</div>
             <form id="loginForm" method="post" action="">
-                <p><span class="LoginIcon">A</span><input id="name" name="name" maxlength="16" /></p>
-                <p><span class="LoginIcon">C</span><input id="email" name="email" /></p>
-                <p><input type="submit" class="blueButton" value="Login" /></p>
+                <div id="inputField">
+                    <input type="text" id="name" name="name" maxlength="16" />
+                    <input type="text" id="email" name="email" />
+                </div>
+                <input type="submit" id="LoginButton" value="Login" />
             </form>
         </div>
     </div>

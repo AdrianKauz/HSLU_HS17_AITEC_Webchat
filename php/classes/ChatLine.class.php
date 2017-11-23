@@ -4,7 +4,12 @@
 class ChatLine extends ChatBase{
 	
 	protected $text = '', $author = '', $gravatar = '';
-	
+
+    /*
+    ================
+    save()
+    ================
+    */
 	public function save(){
 		DB::query("
 			INSERT INTO

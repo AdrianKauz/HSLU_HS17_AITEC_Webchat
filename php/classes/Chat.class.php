@@ -2,9 +2,15 @@
 
 /* The Chat class exploses public static methods, used by ajax.php */
 
-class Chat{
-	
-	public static function login($name,$email){
+class Chat
+{
+    /*
+    ================
+    login()
+    ================
+    */
+	public static function login($name,$email)
+    {
 		if(!$name || !$email){
 			throw new Exception('Fill in all the required fields.');
 		}
@@ -23,8 +29,10 @@ class Chat{
             'gravatar'	=> $gravatar
         ));
 
-        // Check if user doesn't exist on the DB
-        if(!$user->exists()){
+        // Check if user exist on the DB
+        if($user->exists()){
+            $user->setActive();
+        } else {
             // Check if an admin exists, if not (because of reasons): User is automatically an admin
             $result = DB::query('SELECT COUNT(*) as cnt FROM webchat_users WHERE is_admin = 1')->fetch_object()->cnt;
 
@@ -36,24 +44,30 @@ class Chat{
             if($user->save()->affected_rows != 1){
                 throw new Exception('This nick is in use.');
             }
-        } else {
-            // Check here if user is an admin (Don't know if this works!) (2017.11.22)
-            throw new Exception('User exists)');
         }
-		
+
+        // Set session
 		$_SESSION['user']	= array(
 			'name'		=> $name,
+			'is_admin'  => $user->getAdmin(),
 			'gravatar'	=> $gravatar
 		);
 		
 		return array(
 			'status'	=> 1,
 			'name'		=> $name,
+			'is_admin'  => $user->getAdmin(),
 			'gravatar'	=> Chat::gravatarFromHash($gravatar)
 		);
 	}
-	
-	public static function checkLogged(){
+
+    /*
+    ================
+    checkLogged()
+    ================
+    */
+	public static function checkLogged()
+    {
 		$response = array('logged' => false);
 			
 		if($_SESSION['user']['name']){
@@ -66,17 +80,30 @@ class Chat{
 		
 		return $response;
 	}
-	
-	public static function logout(){
-		DB::query("DELETE FROM webchat_users WHERE name = '".DB::esc($_SESSION['user']['name'])."'");
+
+    /*
+    ================
+    logout()
+    ================
+    */
+	public static function logout()
+    {
+		DB::query("UPDATE webchat_users SET is_active = 0 WHERE name = '".DB::esc($_SESSION['user']['name'])."'");
+		DB::commit();
 		
 		$_SESSION = array();
 		unset($_SESSION);
 
 		return array('status' => 1);
 	}
-	
-	public static function submitChat($chatText){
+
+    /*
+    ================
+    submitChat()
+    ================
+    */
+	public static function submitChat($chatText)
+    {
 		if(!$_SESSION['user']){
 			throw new Exception('You are not logged in');
 		}
@@ -100,7 +127,13 @@ class Chat{
 		);
 	}
 
-	public static function countUsers(){
+    /*
+    ================
+    countUsers()
+    ================
+    */
+	public static function countUsers()
+    {
         $result = DB::query('SELECT COUNT(*) as cnt FROM webchat_users') -> fetch_object() -> cnt;
 
         return array(
@@ -108,18 +141,22 @@ class Chat{
         );
     }
 
-	public static function getUsers(){
+    /*
+    ================
+    getUsers()
+    ================
+    */
+	public static function getUsers()
+    {
 		if($_SESSION['user']['name']){
 			$user = new ChatUser(array('name' => $_SESSION['user']['name']));
 			$user->update();
 		}
 		
-		// Deleting chats older than 5 minutes and users inactive for 30 seconds
-		
+		// Deleting chats older than 5 minutes
 		DB::query("DELETE FROM webchat_lines WHERE ts < SUBTIME(NOW(),'0:5:0')");
-		DB::query("DELETE FROM webchat_users WHERE is_admin = 0 AND last_activity < SUBTIME(NOW(),'0:0:30')");
 		
-		$result = DB::query('SELECT * FROM webchat_users ORDER BY name ASC LIMIT 18');
+		$result = DB::query('SELECT * FROM webchat_users WHERE is_active = 1 ORDER BY name ASC LIMIT 18');
 		
 		$users = array();
 		while($user = $result->fetch_object()){
@@ -129,11 +166,17 @@ class Chat{
 	
 		return array(
 			'users' => $users,
-			'total' => DB::query('SELECT COUNT(*) as cnt FROM webchat_users')->fetch_object()->cnt
+			'total' => DB::query('SELECT COUNT(*) as cnt FROM webchat_users WHERE is_active = 1')->fetch_object()->cnt
 		);
 	}
-	
-	public static function getChats($lastID){
+
+    /*
+    ================
+    getChats()
+    ================
+    */
+	public static function getChats($lastID)
+    {
 		$lastID = (int)$lastID;
 	
 		$result = DB::query('SELECT * FROM webchat_lines WHERE id > '.$lastID.' ORDER BY id ASC');
@@ -155,12 +198,16 @@ class Chat{
 	
 		return array('chats' => $chats);
 	}
-	
-	public static function gravatarFromHash($hash, $size=23){
+
+    /*
+    ================
+    gravatarFromHash()
+    ================
+    */
+	public static function gravatarFromHash($hash, $size=23)
+    {
 		return 'http://www.gravatar.com/avatar/'.$hash.'?size='.$size.'&amp;default='.
 				urlencode('http://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?size='.$size);
 	}
 }
-
-
 ?>
