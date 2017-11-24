@@ -19,7 +19,7 @@ End time for this exercise: **2017.11.29**
 _Source: "02b.PHP_Projekt_v4.pdf"_
 - [x] Setup the template and let it run on your webserver _(2017.11.14)_
 - [ ] Add Self-Registration
-- [ ] Add an admin role (to manage the chat and the users)
+- [x] Add an admin role (to manage the chat and the users) _(2017.11.24)_
 - [ ] Admin can activate new users
 - [ ] Admin can block an user
 - [ ] Admin can remove an user

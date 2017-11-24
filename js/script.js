@@ -101,10 +101,14 @@ var chat = {
 		
 		// Logging the user out:
 		$('a.logoutButton').live('click',function(){
-            $('#LoginContainer').show();
-            $('#submitForm').hide();
+            $('#LoginContainer').fadeIn();
+		    $('#submitForm').hide();
             $('#chatTopBar > span').remove();
-            isAdmin = false;
+
+            if(isAdmin){
+                isAdmin = false;
+                $('#chatUsersAdminContainer').fadeOut();
+            }
 
 			$.chatPOST('logout');
 			
@@ -114,10 +118,14 @@ var chat = {
 		// Checking whether the user is already logged (browser refresh)
 		$.chatGET('checkLogged',function(r){
 			if(r.logged){
+			    if(r.loggedAs.is_admin == 1){
+			        isAdmin = true;
+                    $('#chatUsersAdminContainer').show();
+                }
+
 				chat.login(r.loggedAs.name,r.loggedAs.gravatar);
 			} else {
-                $('#LoginContainer').css({"visibility": "visible", "animation": "fadeIn 1s", "-webkit-animation": "fadeIn 1s"});
-                //$('#name').focus();
+                $('#LoginContainer').fadeIn();
 			}
 		});
 		
@@ -284,7 +292,7 @@ var chat = {
 			
 			var users = [];
 			
-			for(var i=0; i< r.users.length;i++){
+			for(var i = 0; i < r.users.length; i++){
 				if(r.users[i]){
 					users.push(chat.render('user',r.users[i]));
 				}
@@ -294,47 +302,44 @@ var chat = {
 			
 			if(r.total<1){
 				message = 'No one is online';
-			}
-			else {
+			} else {
 				message = r.total+' '+(r.total == 1 ? 'person':'people')+' online';
 			}
 			
-			users.push('<p class="count">'+message+'</p>');
+			users.push('<p class="count">' + message + '</p>');
 			
 			$('#chatUsers').html(users.join(''));
 			
 			setTimeout(callback,15000);
 		});
-	},
 
-    // Requesting a list with all the users.
-    getBlockedUsers : function(callback){
-        $.chatGET('getUsers',function(r){
+		// If admin is logged in, load blocked users too
+		if(isAdmin){
 
-            var users = [];
+            $.chatGET('getBlockedUsers',function(r){
 
-            for(var i=0; i< r.users.length;i++){
-                if(r.users[i]){
-                    users.push(chat.render('user',r.users[i]));
+                var users = [];
+
+                for(var i = 0; i < r.users.length; i++){
+                    if(r.users[i]){
+                        users.push(chat.render('user',r.users[i]));
+                    }
                 }
-            }
 
-            var message = '';
+                var message = '';
 
-            if(r.total<1){
-                message = 'No one is online';
-            }
-            else {
-                message = r.total+' '+(r.total == 1 ? 'person':'people')+' online';
-            }
+                if(r.total<1){
+                    message = 'No one is blocked';
+                } else {
+                    message = r.total + ' ' + (r.total == 1 ? 'person is':'people are') + ' blocked';
+                }
 
-            users.push('<p class="count">'+message+'</p>');
+                users.push('<p class="count">' + message + '</p>');
 
-            $('#chatUsers').html(users.join(''));
-
-            setTimeout(callback,15000);
-        });
-    },
+                $('#blockedUsers').html(users.join(''));
+            });
+        }
+	},
 	
 	// This method displays an error message on the top of the page:
 	displayError : function(msg){

@@ -55,7 +55,7 @@ class ChatUser extends ChatBase
 	                                FROM webchat_users
 	                                WHERE name = '".DB::esc($this->name)."'
 	                                AND gravatar = '".DB::esc($this->gravatar)."'
-	                                ) as cnt
+	                                ) AS cnt
 	                  ")->fetch_object()->cnt;
 
 	    return $result;
@@ -93,6 +93,34 @@ class ChatUser extends ChatBase
             SET is_active = 1
             WHERE name = '".DB::esc($this->name)."'
             AND gravatar = '".DB::esc($this->gravatar)."'");
+    }
+
+    /*
+    ================
+    createRole()
+    ================
+    */
+    public function createRole()
+    {
+        $result = DB::query('SELECT EXISTS(SELECT 1
+                                              FROM webchat_users
+                                              WHERE is_admin = 1)
+                                              AS res')->fetch_object()->res;
+
+        $this->is_admin = ($result == 0) ? '1' : '0';
+    }
+
+    /*
+    ================
+    setRole()
+    ================
+    */
+    public function setRole()
+    {
+        $this->is_admin = DB::query("SELECT is_admin AS res
+                                        FROM webchat_users
+                                        WHERE name = '".DB::esc($this->name)."'
+                                        AND gravatar = '".DB::esc($this->gravatar)."'")->fetch_object()->res;
     }
 }
 ?>
