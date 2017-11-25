@@ -222,7 +222,6 @@ class Chat
         while($chat = $result->fetch_object()){
 
             // Returning the GMT (UTC) time of the chat creation:
-
             $chat->time = array(
                 'hours'		=> gmdate('H',strtotime($chat->ts)),
                 'minutes'	=> gmdate('i',strtotime($chat->ts))
@@ -241,9 +240,35 @@ class Chat
     blockUser()
     ================
     */
-    public static function blockUser($userName)
+    public static function blockUser($sUserName)
     {
-        $success = DB::query("UPDATE webchat_users SET is_blocked = 1, is_active = 0 WHERE name = '".DB::esc($userName)."' AND is_blocked = 0");
+        return self::privBlockUser($sUserName, true);
+    }
+
+    /*
+    ================
+    unblockUser()
+    ================
+    */
+    public static function unblockUser($sUserName)
+    {
+        return self::privBlockUser($sUserName, false);
+    }
+
+    /*
+    ================
+    privBlockUser()
+    ================
+    */
+    private static function privBlockUser($sUserName, $bBlockUser)
+    {
+        $success = null;
+
+        if($bBlockUser){
+            $success = DB::query("UPDATE webchat_users SET is_blocked = 1, is_active = 0 WHERE name = '".DB::esc($sUserName)."' AND is_blocked = 0");
+        } else {
+            $success = DB::query("UPDATE webchat_users SET is_blocked = 1 WHERE name = '".DB::esc($sUserName)."' AND is_blocked = 1");
+        }
 
         return array('result' => ($success == false) ? false : true);
     }
