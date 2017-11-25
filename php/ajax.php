@@ -68,6 +68,10 @@ try{
 		case 'getChats':
 			$response = Chat::getChats($_GET['lastID']);
 		    break;
+
+        case 'blockUser':
+            $response = Chat::blockUser($_GET['userName']);
+            break;
 		
 		default:
 			throw new Exception('Wrong action');

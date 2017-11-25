@@ -11,7 +11,7 @@ var chat = {
 		lastID 		: 0,
 		noActivity	: 0
 	},
-	
+
 	// Init binds event listeners and sets up timers:
 	init : function(){
 		
@@ -40,7 +40,7 @@ var chat = {
 			// Using our chatPOST wrapper function (defined in the bottom):
 			$.chatPOST('login',$(this).serialize(),function(r){
 				working = false;
-				
+
 				if(r.error){
 					chat.displayError(r.error);
 				}
@@ -121,6 +121,7 @@ var chat = {
 			    if(r.loggedAs.is_admin == 1){
 			        isAdmin = true;
                     $('#chatUsersAdminContainer').show();
+                    chat.getUsers();
                 }
 
 				chat.login(r.loggedAs.name,r.loggedAs.gravatar);
@@ -164,29 +165,48 @@ var chat = {
 	
 	// The render method generates the HTML markup that is needed by the other methods:
 	render : function(template,params){
-		
 		var arr = [];
+
 		switch(template){
 			case 'loginTopBar':
 				arr = [
 				'<span><img src="',params.gravatar,'" width="23" height="23" />',
 				'<span class="name">',params.name,
 				'</span><a href="" class="logoutButton rounded">Logout</a></span>'];
-			break;
-			
+			    break;
 			case 'chatLine':
 				arr = [
 					'<div class="chat chat-',params.id,'"><span class="gravatar"><img src="',params.gravatar,
 					'" width="23" height="23" onload="this.style.visibility=\'visible\'" />','</span><span class="author">',params.author,
 					'</span><span class="time">',params.time,'</span><span class="text">',params.text,'</span></div>'];
-			break;
-			
+			    break;
 			case 'user':
-				arr = [
-					'<div class="user" title="',params.name,'"><img src="',
-					params.gravatar,'" width="30" height="30" onload="this.style.visibility=\'visible\'" /></div>'
-				];
-			break;
+			    if(isAdmin){
+                    arr = [
+                        '<div class="user" title="Block ',
+                        params.name,'"><img class="userIconImage" src="',
+                        params.gravatar,
+                        '" width="30" height="30" onload="this.style.visibility=\'visible\'" />',
+                        '<div class="blockUserButton"><img src="img/block_user.png" width="30" height="30" onclick="chat.blockUser(\'',
+                        params.name,
+                        '\');"></div>',
+                        '</div>'];
+                } else {
+                    arr = [
+                        '<div class="user" title="',
+                        params.name,'"><img class="userIconImage" src="',
+                        params.gravatar,
+                        '" width="30" height="30" onload="this.style.visibility=\'visible\'" />',
+                        '</div>'];
+                }
+
+			    break;
+            case 'blockedUser':
+                arr = [
+                    '<div class="user" title="',params.name,'"><img src="',
+                    params.gravatar,'" width="30" height="30" onload="this.style.visibility=\'visible\'" /></div>'
+                ];
+                break;
 		}
 		
 		// A single array join is faster than multiple concatenations
@@ -287,30 +307,31 @@ var chat = {
     },
 
 	// Requesting a list with all the users.
-	getUsers : function(callback){
+	getUsers : function(callback)
+    {
 		$.chatGET('getUsers',function(r){
-			
 			var users = [];
-			
+            var message = '';
+
 			for(var i = 0; i < r.users.length; i++){
 				if(r.users[i]){
 					users.push(chat.render('user',r.users[i]));
 				}
 			}
 			
-			var message = '';
-			
-			if(r.total<1){
+			if(r.total < 1){
 				message = 'No one is online';
 			} else {
-				message = r.total+' '+(r.total == 1 ? 'person':'people')+' online';
+				message = r.total+' '+(r.total == 1 ? 'person':'people') + ' online';
 			}
 			
-			users.push('<p class="count">' + message + '</p>');
+			users.push('<p class="count ">' + message + '</p>');
 			
 			$('#chatUsers').html(users.join(''));
-			
-			setTimeout(callback,15000);
+
+			if(callback !== null){
+                setTimeout(callback,15000);
+            }
 		});
 
 		// If admin is logged in, load blocked users too
@@ -322,7 +343,7 @@ var chat = {
 
                 for(var i = 0; i < r.users.length; i++){
                     if(r.users[i]){
-                        users.push(chat.render('user',r.users[i]));
+                        users.push(chat.render('blockedUser',r.users[i]));
                     }
                 }
 
@@ -340,6 +361,20 @@ var chat = {
             });
         }
 	},
+
+    // Admin function
+    blockUser : function(newUserName)
+    {
+        if(newUserName !== null & newUserName !== ''){
+            $.chatGET('blockUser',{userName: newUserName},function(r) {
+                if(r.result) {
+                    chat.getUsers(null);  // Refresh user list without blocked user
+                } else {
+                    chat.displayError("Couldn't block user \"" + newUserName + "\"!");
+                }
+            });
+        }
+    },
 	
 	// This method displays an error message on the top of the page:
 	displayError : function(msg){

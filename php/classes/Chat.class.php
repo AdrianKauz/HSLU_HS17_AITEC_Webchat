@@ -173,7 +173,7 @@ class Chat
         // Deleting chats older than 5 minutes
         DB::query("DELETE FROM webchat_lines WHERE ts < SUBTIME(NOW(),'0:5:0')");
 
-        $result = DB::query('SELECT * FROM webchat_users WHERE is_active = 1 ORDER BY name ASC LIMIT 18');
+        $result = DB::query('SELECT * FROM webchat_users WHERE is_active = 1 AND is_blocked = 0 ORDER BY name ASC LIMIT 18');
 
         $users = array();
         while($user = $result->fetch_object()){
@@ -234,6 +234,18 @@ class Chat
         }
 
         return array('chats' => $chats);
+    }
+
+    /*
+    ================
+    blockUser()
+    ================
+    */
+    public static function blockUser($userName)
+    {
+        $success = DB::query("UPDATE webchat_users SET is_blocked = 1, is_active = 0 WHERE name = '".DB::esc($userName)."' AND is_blocked = 0");
+
+        return array('result' => ($success == false) ? false : true);
     }
 
     /*
