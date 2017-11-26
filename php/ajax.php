@@ -72,7 +72,11 @@ try{
         case 'blockUser':
             $response = Chat::blockUser($_GET['userName']);
             break;
-		
+
+        case 'unBlockUser':
+            $response = Chat::unBlockUser($_GET['userName']);
+            break;
+
 		default:
 			throw new Exception('Wrong action');
 	}

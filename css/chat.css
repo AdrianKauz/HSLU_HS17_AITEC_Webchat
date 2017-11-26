@@ -295,7 +295,6 @@ input[type=text]:hover{
 #chatUsersAdminContainer{
     height: 50%;
     display: none;
-    border: 1px solid blue;
 }
 
 #adminContainerTitle{

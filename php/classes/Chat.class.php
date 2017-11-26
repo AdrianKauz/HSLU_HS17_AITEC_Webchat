@@ -265,9 +265,9 @@ class Chat
         $success = null;
 
         if($bBlockUser){
-            $success = DB::query("UPDATE webchat_users SET is_blocked = 1, is_active = 0 WHERE name = '".DB::esc($sUserName)."' AND is_blocked = 0");
+            $success = DB::query("UPDATE webchat_users SET is_blocked = 1 WHERE name = '".DB::esc($sUserName)."' AND is_blocked = 0");
         } else {
-            $success = DB::query("UPDATE webchat_users SET is_blocked = 1 WHERE name = '".DB::esc($sUserName)."' AND is_blocked = 1");
+            $success = DB::query("UPDATE webchat_users SET is_blocked = 0 WHERE name = '".DB::esc($sUserName)."' AND is_blocked = 1");
         }
 
         return array('result' => ($success == false) ? false : true);

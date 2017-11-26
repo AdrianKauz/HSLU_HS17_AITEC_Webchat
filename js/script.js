@@ -13,8 +13,8 @@ var chat = {
 	},
 
 	// Init binds event listeners and sets up timers:
-	init : function(){
-		
+	init : function()
+    {
 		// Using the defaultText jQuery plugin, included at the bottom:
 		$('#name').defaultText('Nickname');
 		$('#email').defaultText('Email (Gravatars are Enabled)');
@@ -101,20 +101,10 @@ var chat = {
 		
 		// Logging the user out:
 		$('a.logoutButton').live('click',function(){
-            $('#LoginContainer').fadeIn();
-		    $('#submitForm').hide();
-            $('#chatTopBar > span').remove();
-
-            if(isAdmin){
-                isAdmin = false;
-                $('#chatUsersAdminContainer').fadeOut();
-            }
-
-			$.chatPOST('logout');
-			
+		    chat.logout();
 			return false;
 		});
-		
+
 		// Checking whether the user is already logged (browser refresh)
 		$.chatGET('checkLogged',function(r){
 			if(r.logged){
@@ -148,7 +138,8 @@ var chat = {
 	},
 
 	// The login method hides displays the user's login data and shows the submit form:
-	login : function(name,gravatar){
+	login : function(name,gravatar)
+    {
 		chat.data.name = name;
 		chat.data.gravatar = gravatar;
 		$('#chatTopBar').html(chat.render('loginTopBar',chat.data));
@@ -162,9 +153,26 @@ var chat = {
         	$('#chatText').focus();
         });
 	},
+
+    logout : function()
+    {
+        $('#LoginContainer').fadeIn();
+        $('#submitForm').hide();
+        $('#chatTopBar > span').remove();
+
+        if(isAdmin){
+            isAdmin = false;
+            $('#chatUsersAdminContainer').fadeOut();
+        }
+
+        $.chatPOST('logout');
+
+        return true;
+    },
 	
 	// The render method generates the HTML markup that is needed by the other methods:
-	render : function(template,params){
+	render : function(template,params)
+    {
 		var arr = [];
 
 		switch(template){
@@ -203,9 +211,14 @@ var chat = {
 			    break;
             case 'blockedUser':
                 arr = [
-                    '<div class="user" title="',params.name,'"><img src="',
-                    params.gravatar,'" width="30" height="30" onload="this.style.visibility=\'visible\'" /></div>'
-                ];
+                    '<div class="user" title="Unblock ',
+                    params.name,'"><img class="userIconImage" src="',
+                    params.gravatar,
+                    '" width="30" height="30" onload="this.style.visibility=\'visible\'" />',
+                    '<div class="blockUserButton"><img src="img/unblock_user.png" width="30" height="30" onclick="chat.unBlockUser(\'',
+                    params.name,
+                    '\');"></div>',
+                    '</div>'];
                 break;
 		}
 		
@@ -214,7 +227,8 @@ var chat = {
 	},
 	
 	// The addChatLine method ads a chat entry to the page
-	addChatLine : function(params){
+	addChatLine : function(params)
+    {
 		
 		// All times are displayed in the user's timezone
 		var d = new Date();
@@ -259,7 +273,8 @@ var chat = {
 	},
 	
 	// This method requests the latest chats (since lastID), and adds them to the page.
-	getChats : function(callback){
+	getChats : function(callback)
+    {
 		$.chatGET('getChats',{lastID: chat.data.lastID},function(r){
 			
 			for(var i=0;i<r.chats.length;i++){
@@ -300,7 +315,8 @@ var chat = {
 		});
 	},
 
-    countUsers : function(){
+    countUsers : function()
+    {
 	  $.chatGET('countUsers',function(r){
 	      return r.total;
       });
@@ -375,9 +391,23 @@ var chat = {
             });
         }
     },
+
+    unBlockUser : function(newUserName)
+    {
+        if(newUserName !== null & newUserName !== ''){
+            $.chatGET('unBlockUser',{userName: newUserName},function(r) {
+                if(r.result) {
+                    chat.getUsers(null);  // Refresh user list without blocked user
+                } else {
+                    chat.displayError("Couldn't unblock user \"" + newUserName + "\"!");
+                }
+            });
+        }
+    },
 	
 	// This method displays an error message on the top of the page:
-	displayError : function(msg){
+	displayError : function(msg)
+    {
 		var elem = $('<div>',{
 			id		: 'chatErrorMessage',
 			html	: msg
@@ -398,16 +428,19 @@ var chat = {
 };
 
 // Custom GET & POST wrappers:
-$.chatPOST = function(action,data,callback){
+$.chatPOST = function(action,data,callback)
+{
 	$.post('php/ajax.php?action='+action,data,callback,'json');
 }
 
-$.chatGET = function(action,data,callback){
+$.chatGET = function(action,data,callback)
+{
 	$.get('php/ajax.php?action='+action,data,callback,'json');
 }
 
 // A custom jQuery method for placeholder text:
-$.fn.defaultText = function(value){
+$.fn.defaultText = function(value)
+{
 	
 	var element = this.eq(0);
 	element.data('defaultText',value);
