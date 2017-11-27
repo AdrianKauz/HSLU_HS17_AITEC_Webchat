@@ -34,13 +34,7 @@ class Chat
             $user->setActive();
             $user->setRole();
         } else {
-            // Check if an admin exists, if not (because of reasons): This user is automatically an admin
-            $user->createRole();
-
-            // The save method returns a MySQLi object
-            if($user->save()->affected_rows != 1){
-                throw new Exception('This nick is in use.');
-            }
+            throw new Exception('Please register first!');
         }
 
         // Set session
@@ -57,6 +51,50 @@ class Chat
             'gravatar'	=> Chat::gravatarFromHash($gravatar)
         );
     }
+
+
+    /*
+    ================
+    register()
+    ================
+    */
+    public static function register($name,$email)
+    {
+        if(!$name || !$email){
+            throw new Exception('Fill in all the required fields.');
+        }
+
+        if(!filter_input(INPUT_POST,'email',FILTER_VALIDATE_EMAIL)){
+            throw new Exception('Your email is invalid.');
+        }
+
+        // Preparing the gravatar hash:
+        $gravatar = md5(strtolower(trim($email)));
+
+        // Prepare user (Standard is user)
+        $user = new ChatUser(array(
+            'name'		=> $name,
+            'is_active'	=> '0',
+            'is_admin'	=> '0',
+            'gravatar'	=> $gravatar
+        ));
+
+        // Check if user exist on the DB
+        if($user->exists()){
+            throw new Exception('This nick is in use!');
+        } else {
+            // Check if an admin exists, if not (because of reasons): This user is automatically an admin
+            $user->createRole();
+            $result = $user->register();
+
+            if(!$result) {
+                throw new Exception("Registering failed!");
+            }
+        }
+
+        return array('status' => 1);
+    }
+
 
     /*
     ================
@@ -79,6 +117,7 @@ class Chat
         return $response;
     }
 
+
     /*
     ================
     logout()
@@ -94,6 +133,7 @@ class Chat
 
         return array('status' => 1);
     }
+
 
     /*
     ================
@@ -125,6 +165,7 @@ class Chat
         );
     }
 
+
     /*
     ================
     countUsers()
@@ -138,6 +179,7 @@ class Chat
             'total' => $result
         );
     }
+
 
     /*
     ================
@@ -157,6 +199,7 @@ class Chat
             'result' => $result
         );
     }
+
 
     /*
     ================
@@ -187,6 +230,7 @@ class Chat
         );
     }
 
+
     /*
     ================
     getBlockedUsers()
@@ -206,6 +250,7 @@ class Chat
             'total' => DB::query('SELECT COUNT(*) as cnt FROM webchat_users WHERE is_blocked = 1')->fetch_object()->cnt
         );
     }
+
 
     /*
     ================
@@ -235,6 +280,7 @@ class Chat
         return array('chats' => $chats);
     }
 
+
     /*
     ================
     blockUser()
@@ -245,6 +291,7 @@ class Chat
         return self::privBlockUser($sUserName, true);
     }
 
+
     /*
     ================
     unblockUser()
@@ -254,6 +301,7 @@ class Chat
     {
         return self::privBlockUser($sUserName, false);
     }
+
 
     /*
     ================
@@ -272,6 +320,7 @@ class Chat
 
         return array('result' => ($success == false) ? false : true);
     }
+
 
     /*
     ================
@@ -295,6 +344,7 @@ class Chat
             );
         }
     }
+
 
     /*
     ================

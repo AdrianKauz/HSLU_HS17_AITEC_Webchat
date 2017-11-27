@@ -37,6 +37,10 @@ try{
             $response = Chat::countUsers();
             break;
 
+        case 'register':
+            $response = Chat::register($_POST['name'],$_POST['email']);
+            break;
+
 	    case 'login':
 			$response = Chat::login($_POST['name'],$_POST['email']);
 		    break;

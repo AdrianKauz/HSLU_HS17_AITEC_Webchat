@@ -3,11 +3,24 @@ $(document).ready(function(){
 	chat.init();
 });
 
+$('#RegisterButton').click(function(){
+    $('#loginMode').val('register');
+});
+
+$('#LoginButton').click(function(){
+    $('#loginMode').val('login');
+});
+
+
 var chat = {
     // data for the current user:
     currentUser : {
         is_admin : false,
         is_connected : true // Just temporary
+    },
+
+    activity : {
+        loginFormIsWorking : false
     },
 
 	// data holds variables for use in the class:
@@ -35,11 +48,39 @@ var chat = {
 		
 		// Logging a person in the chat:
 		$('#loginForm').submit(function(){
-			if(working){
+			if(chat.activity.loginFormIsWorking){
                 return false;
-			}
+			} else {
+                chat.activity.loginFormIsWorking = true;
+            }
 
-			working = true;
+			// Be careful! -> This solution is a quick and dirty method.
+            // If you change the order of the input fields in the html-form, so it changes in the array too!
+            var arrInputValues = $(this).serializeArray();
+
+            if(arrInputValues[0].value === "register"){
+                chat.registerUser(arrInputValues[1].value, arrInputValues[2].value);
+            }
+
+            if(arrInputValues[0].value === "login"){
+                chat.loginUser(arrInputValues[1].value, arrInputValues[2].value);
+            }
+
+            chat.activity.loginFormIsWorking = false;
+
+            return false;
+
+
+
+
+
+			//alert($(this).serializeArray());
+
+
+			//alert($(this).serializeArray()[0].name);
+
+
+
 			
 			// Using our chatPOST wrapper function (defined in the bottom):
 			$.chatPOST('login',$(this).serialize(),function(r){
@@ -141,7 +182,7 @@ var chat = {
 		// Count registered users. If none, set LoggingContainer to admin-mode
         $.chatGET('countUsers',function(r){
         	if(r.total == 0){
-                $('#LoginMessage').html("Greetings Administrator!");
+                $('#loginFieldTitle').html("Greetings Administrator!");
 			}
         });
 	},
@@ -327,6 +368,35 @@ var chat = {
             }
 		});
 	},
+
+    registerUser : function(sUserName, sUserEmail)
+    {
+        var actionString = "name=" + sUserName + "&email=" + sUserEmail;
+        $.chatPOST('register',actionString,function(r){
+            if(r.error){
+                chat.displayError(r.error);
+            }
+        });
+    },
+
+    loginUser : function(sUserName, sUserEmail)
+    {
+        var actionString = "name=" + sUserName + "&email=" + sUserEmail;
+        $.chatPOST('login',actionString,function(r){
+            if(r.error){
+                chat.displayError(r.error);
+            }
+            else{
+                $.chatGET('userIsAdmin',function(r){
+                    if(r.result == 1){
+                        chat.currentUser.is_admin = true;
+                    }
+                });
+
+                chat.login(r.name,r.gravatar);
+            }
+        });
+    },
 
     countUsers : function()
     {

@@ -29,6 +29,25 @@ class ChatUser extends ChatBase
 
     /*
     ================
+    register()
+    ================
+    */
+    public function register()
+    {
+        return DB::query("
+			INSERT INTO webchat_users (name, is_active, is_admin, gravatar)
+			VALUES (
+				'".DB::esc($this->name)."',
+				'0',
+				'".DB::esc($this->is_admin)."',
+				'".DB::esc($this->gravatar)."'
+		)");
+
+        // return DB::getMySQLiObject();
+    }
+
+    /*
+    ================
     update()
     ================
     */

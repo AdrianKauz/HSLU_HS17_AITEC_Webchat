@@ -21,7 +21,7 @@ _Source: "02b.PHP_Projekt_v4.pdf"_
 - [ ] Add Self-Registration
 - [x] Add an admin role (to manage the chat and the users) _(2017.11.24)_
 - [ ] Admin can activate new users
-- [ ] Admin can block an user
+- [x] Admin can block an user _(2017.11.26)_
 - [ ] Admin can remove an user
 - [x] Install a stable input validation for chat-messages (For security and stuff) _(2017.11.19)_
 

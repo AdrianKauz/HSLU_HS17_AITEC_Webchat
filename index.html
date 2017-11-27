@@ -37,13 +37,15 @@
     </div>
 
     <div id="LoginContainer">
-        <div id="Login">
-            <div id="LoginMessage" >Welcome user!</div>
+        <div id="loginField">
+            <div id="loginFieldTitle">Welcome user!</div>
             <form id="loginForm" method="post" action="">
-                <div id="inputField">
+                <div id="loginInputField">
+                    <input type="hidden" id="loginMode" name="loginMode"/>
                     <input type="text" id="name" name="name" autocomplete="off" maxlength="16" />
                     <input type="text" id="email" name="email" autocomplete="off" />
                 </div>
+                <input type="submit" id="RegisterButton" value="Register" />
                 <input type="submit" id="LoginButton" value="Login" />
             </form>
         </div>
