@@ -77,6 +77,10 @@ try{
             $response = Chat::unBlockUser($_GET['userName']);
             break;
 
+        case 'getStatus':
+            $response = Chat::getStatus();
+            break;
+
 		default:
 			throw new Exception('Wrong action');
 	}

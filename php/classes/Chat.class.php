@@ -265,12 +265,35 @@ class Chat
         $success = null;
 
         if($bBlockUser){
-            $success = DB::query("UPDATE webchat_users SET is_blocked = 1 WHERE name = '".DB::esc($sUserName)."' AND is_blocked = 0");
+            $success = DB::query("UPDATE webchat_users SET is_blocked = 1, is_active = 0 WHERE name = '".DB::esc($sUserName)."' AND is_blocked = 0");
         } else {
             $success = DB::query("UPDATE webchat_users SET is_blocked = 0 WHERE name = '".DB::esc($sUserName)."' AND is_blocked = 1");
         }
 
         return array('result' => ($success == false) ? false : true);
+    }
+
+    /*
+    ================
+    getStatus()
+    ================
+    */
+    public static function getStatus()
+    {
+        $result = DB::query("SELECT is_admin, is_blocked FROM webchat_users WHERE name = '".DB::esc($_SESSION['user']['name'])."'");
+
+        if(!$result){
+            return array(
+                'is_admin' => null,
+                'is_blocked' => null
+            );
+        } else {
+            $obj = $result->fetch_object();
+            return array(
+                'is_admin' => ($obj->is_admin == 1) ? true : false,
+                'is_blocked' => ($obj->is_blocked == 1) ? true : false
+            );
+        }
     }
 
     /*

@@ -3,13 +3,17 @@ $(document).ready(function(){
 	chat.init();
 });
 
-var isAdmin = false;
-
 var chat = {
+    // data for the current user:
+    currentUser : {
+        is_admin : false,
+        is_connected : true // Just temporary
+    },
+
 	// data holds variables for use in the class:
 	data : {
 		lastID 		: 0,
-		noActivity	: 0
+		noActivity	: 0,
 	},
 
 	// Init binds event listeners and sets up timers:
@@ -47,7 +51,7 @@ var chat = {
 				else{
                     $.chatGET('userIsAdmin',function(r){
                         if(r.result == 1){
-                            isAdmin = true;
+                            chat.currentUser.is_admin = true;
                         }
                     });
 
@@ -90,7 +94,7 @@ var chat = {
 				working = false;
 				
 				$('#chatText').val('');
-				$('div.chat-'+tempID).remove();
+				$('div.chat-' + tempID).remove();
 				
 				params['id'] = r.insertID;
 				chat.addChatLine($.extend({},params));
@@ -109,8 +113,8 @@ var chat = {
 		$.chatGET('checkLogged',function(r){
 			if(r.logged){
 			    if(r.loggedAs.is_admin == 1){
-			        isAdmin = true;
-                    $('#chatUsersAdminContainer').show();
+                    chat.currentUser.is_admin = true;
+                    $('#chatAdminContainer').show();
                     chat.getUsers();
                 }
 
@@ -129,6 +133,11 @@ var chat = {
 			chat.getUsers(getUsersTimeoutFunction);
 		})();
 
+        (function getStatusTimeoutFunction(){
+            chat.getStatus(getStatusTimeoutFunction);
+        })();
+
+
 		// Count registered users. If none, set LoggingContainer to admin-mode
         $.chatGET('countUsers',function(r){
         	if(r.total == 0){
@@ -145,8 +154,8 @@ var chat = {
 		$('#chatTopBar').html(chat.render('loginTopBar',chat.data));
 
         $('#LoginContainer').fadeOut(function(){
-            if(isAdmin){
-                $('#chatUsersAdminContainer').fadeIn();
+            if(chat.currentUser.is_admin){
+                $('#chatAdminContainer').fadeIn();
             }
 
             $('#submitForm').fadeIn();
@@ -156,14 +165,16 @@ var chat = {
 
     logout : function()
     {
+        // chat.currentUser.is_connected = false;
+
+        if(chat.currentUser.is_admin){
+            chat.currentUser.is_admin = false;
+            $('#chatAdminContainer').fadeOut();
+        }
+
         $('#LoginContainer').fadeIn();
         $('#submitForm').hide();
         $('#chatTopBar > span').remove();
-
-        if(isAdmin){
-            isAdmin = false;
-            $('#chatUsersAdminContainer').fadeOut();
-        }
 
         $.chatPOST('logout');
 
@@ -189,7 +200,7 @@ var chat = {
 					'</span><span class="time">',params.time,'</span><span class="text">',params.text,'</span></div>'];
 			    break;
 			case 'user':
-			    if(isAdmin){
+			    if(chat.currentUser.is_admin){
                     arr = [
                         '<div class="user" title="Block ',
                         params.name,'"><img class="userIconImage" src="',
@@ -310,8 +321,10 @@ var chat = {
 			if(chat.data.noActivity > 20){
 				nextRequest = 15000;
 			}
-		
-			setTimeout(callback,nextRequest);
+
+            if(chat.currentUser.is_connected){
+                setTimeout(callback,nextRequest);
+            }
 		});
 	},
 
@@ -322,7 +335,21 @@ var chat = {
       });
     },
 
-	// Requesting a list with all the users.
+	getStatus : function(callback)
+    {
+        $.chatGET('getStatus',function(r){
+            if(r.is_blocked){
+                chat.logout();
+                chat.displayError("You were blocked by the admin!");
+            }
+
+            if(chat.currentUser.is_connected){
+                setTimeout(callback, 3000);
+            }
+        });
+    },
+
+    // Requesting a list with all the users.
 	getUsers : function(callback)
     {
 		$.chatGET('getUsers',function(r){
@@ -345,13 +372,13 @@ var chat = {
 			
 			$('#chatUsers').html(users.join(''));
 
-			if(callback !== null){
+			if(callback !== null && chat.currentUser.is_connected){
                 setTimeout(callback,15000);
             }
 		});
 
 		// If admin is logged in, load blocked users too
-		if(isAdmin){
+		if(chat.currentUser.is_admin){
 
             $.chatGET('getBlockedUsers',function(r){
 
@@ -381,7 +408,7 @@ var chat = {
     // Admin function
     blockUser : function(newUserName)
     {
-        if(newUserName !== null & newUserName !== ''){
+        if(newUserName !== null && newUserName !== ''){
             $.chatGET('blockUser',{userName: newUserName},function(r) {
                 if(r.result) {
                     chat.getUsers(null);  // Refresh user list without blocked user
@@ -394,7 +421,7 @@ var chat = {
 
     unBlockUser : function(newUserName)
     {
-        if(newUserName !== null & newUserName !== ''){
+        if(newUserName !== null && newUserName !== ''){
             $.chatGET('unBlockUser',{userName: newUserName},function(r) {
                 if(r.result) {
                     chat.getUsers(null);  // Refresh user list without blocked user
