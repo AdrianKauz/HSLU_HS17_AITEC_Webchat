@@ -32,8 +32,12 @@ class Chat
 
         // Check if user exist on the DB
         if($user->exists()){
-            $user->setActive();
-            $user->setRole();
+            if($user->isActivated()) {
+                $user->setActive();
+                $user->setRole();
+            } else{
+                throw new Exception('Please wait until you\'re activated!');
+            }
         } else {
             throw new Exception('Please register first!');
         }

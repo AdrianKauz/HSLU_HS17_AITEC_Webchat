@@ -17,11 +17,12 @@ class ChatUser extends ChatBase
 	public function save()
     {
 		DB::query("
-			INSERT INTO webchat_users (name, is_active, is_admin, gravatar)
+			INSERT INTO webchat_users (name, is_active, is_admin, $is_activated, gravatar)
 			VALUES (
 				'".DB::esc($this->name)."',
 				'1',
 				'".DB::esc($this->is_admin)."',
+				'".DB::esc($this->is_activated)."',
 				'".DB::esc($this->gravatar)."'
 		)");
 		
@@ -81,6 +82,25 @@ class ChatUser extends ChatBase
 	                  ")->fetch_object()->cnt;
 
 	    return $result;
+    }
+
+
+
+    /*
+    ================
+    exists()
+    ================
+    */
+    public function isActivated()
+    {
+        $result = DB::query("
+	                  SELECT is_activated
+                        FROM webchat_users
+                        WHERE name = '".DB::esc($this->name)."'
+                        AND gravatar = '".DB::esc($this->gravatar)."'
+	                  ")->fetch_object()->is_activated;
+
+        return $result;
     }
 
     /*
@@ -144,7 +164,7 @@ class ChatUser extends ChatBase
                                               AS res')->fetch_object()->res;
 
         $this->is_admin = ($result == 0) ? '1' : '0';
-        $this->is_activated = 1;
+        $this->is_activated = ($result == 0) ? '1' : '0';
     }
 
     /*
