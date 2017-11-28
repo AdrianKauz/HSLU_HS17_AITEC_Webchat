@@ -45,6 +45,7 @@ CREATE TABLE `webchat_users` (
   `is_active`     int(1)      DEFAULT 0,
   `is_admin`      int(1)      DEFAULT 0,
   `is_blocked`    int(1)      DEFAULT 0,
+  `is_activated`  int(1)      DEFAULT 0,
   `last_activity` timestamp   NOT NULL default CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`),

@@ -272,6 +272,17 @@ var chat = {
                     '\');"></div>',
                     '</div>'];
                 break;
+            case 'newUser':
+                arr = [
+                    '<div class="user" title="Activate ',
+                    params.name,'"><img class="userIconImage" src="',
+                    params.gravatar,
+                    '" width="30" height="30" onload="this.style.visibility=\'visible\'" />',
+                    '<div class="blockUserButton"><img src="img/unblock_user.png" width="30" height="30" onclick="chat.activateUser(\'',
+                    params.name,
+                    '\');"></div>',
+                    '</div>'];
+                break;
 		}
 		
 		// A single array join is faster than multiple concatenations
@@ -376,6 +387,9 @@ var chat = {
             if(r.error){
                 chat.displayError(r.error);
             }
+            else if(r == 1){
+            	alert("Registration completed successfully")
+			}
         });
     },
 
@@ -447,7 +461,7 @@ var chat = {
             }
 		});
 
-		// If admin is logged in, load blocked users too
+		// If admin is logged in, load blocked and new users too
 		if(chat.currentUser.is_admin){
 
             $.chatGET('getBlockedUsers',function(r){
@@ -471,6 +485,29 @@ var chat = {
                 users.push('<p class="count">' + message + '</p>');
 
                 $('#blockedUsers').html(users.join(''));
+            });
+
+            $.chatGET('getNewUsers',function(r){
+
+                var users = [];
+
+                for(var i = 0; i < r.users.length; i++){
+                    if(r.users[i]){
+                        users.push(chat.render('newUser',r.users[i]));
+                    }
+                }
+
+                var message = '';
+
+                if(r.total<1){
+                    message = 'No new users';
+                } else {
+                    message = r.total + ' ' + (r.total == 1 ? 'person is':'people are') + ' new';
+                }
+
+                users.push('<p class="count">' + message + '</p>');
+
+                $('#newUsers').html(users.join(''));
             });
         }
 	},
@@ -497,6 +534,19 @@ var chat = {
                     chat.getUsers(null);  // Refresh user list without blocked user
                 } else {
                     chat.displayError("Couldn't unblock user \"" + newUserName + "\"!");
+                }
+            });
+        }
+    },
+
+    activateUser : function(newUserName)
+    {
+        if(newUserName !== null && newUserName !== ''){
+            $.chatGET('activateUser',{userName: newUserName},function(r) {
+                if(r.result) {
+                    chat.getUsers(null);  // Refresh user list without blocked user
+                } else {
+                    chat.displayError("Couldn't activate user \"" + newUserName + "\"!");
                 }
             });
         }

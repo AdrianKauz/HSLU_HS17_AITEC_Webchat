@@ -69,6 +69,10 @@ try{
             $response = Chat::getBlockedUsers();
             break;
 
+        case 'getNewUsers':
+            $response = Chat::getNewUsers();
+            break;
+
 		case 'getChats':
 			$response = Chat::getChats($_GET['lastID']);
 		    break;
@@ -79,6 +83,10 @@ try{
 
         case 'unBlockUser':
             $response = Chat::unBlockUser($_GET['userName']);
+            break;
+
+        case 'activateUser':
+            $response = Chat::activateUser($_GET['userName']);
             break;
 
         case 'getStatus':

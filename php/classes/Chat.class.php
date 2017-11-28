@@ -24,9 +24,10 @@ class Chat
 
         // Prepare user (Standard is user)
         $user = new ChatUser(array(
-            'name'		=> $name,
-            'is_admin'	=> '0',
-            'gravatar'	=> $gravatar
+            'name'		   => $name,
+            'is_admin'	   => '0',
+            'is_activated' => 0,
+            'gravatar'	   => $gravatar
         ));
 
         // Check if user exist on the DB
@@ -73,10 +74,11 @@ class Chat
 
         // Prepare user (Standard is user)
         $user = new ChatUser(array(
-            'name'		=> $name,
-            'is_active'	=> '0',
-            'is_admin'	=> '0',
-            'gravatar'	=> $gravatar
+            'name'		   => $name,
+            'is_active'	   => '0',
+            'is_admin'	   => '0',
+            'is_activated' => '0',
+            'gravatar'	   => $gravatar
         ));
 
         // Check if user exist on the DB
@@ -216,7 +218,7 @@ class Chat
         // Deleting chats older than 5 minutes
         DB::query("DELETE FROM webchat_lines WHERE ts < SUBTIME(NOW(),'0:5:0')");
 
-        $result = DB::query('SELECT * FROM webchat_users WHERE is_active = 1 AND is_blocked = 0 ORDER BY name ASC LIMIT 18');
+        $result = DB::query('SELECT * FROM webchat_users WHERE is_active = 1 AND is_blocked = 0 AND is_activated = 1 ORDER BY name ASC LIMIT 18');
 
         $users = array();
         while($user = $result->fetch_object()){
@@ -250,7 +252,25 @@ class Chat
             'total' => DB::query('SELECT COUNT(*) as cnt FROM webchat_users WHERE is_blocked = 1')->fetch_object()->cnt
         );
     }
+    /*
+    ================
+    getNewUsers()
+    ================
+    */
+    public static function getNewUsers(){
+        $result = DB::query('SELECT * FROM webchat_users WHERE is_activated = 0 and is_blocked = 0 ORDER BY name ASC LIMIT 18');
 
+        $users = array();
+        while($user = $result->fetch_object()){
+            $user->gravatar = Chat::gravatarFromHash($user->gravatar,30);
+            $users[] = $user;
+        }
+
+        return array(
+            'users' => $users,
+            'total' => DB::query('SELECT COUNT(*) as cnt FROM webchat_users WHERE is_activated = 0 and is_blocked = 0')->fetch_object()->cnt
+        );
+    }
 
     /*
     ================
@@ -316,6 +336,34 @@ class Chat
             $success = DB::query("UPDATE webchat_users SET is_blocked = 1, is_active = 0 WHERE name = '".DB::esc($sUserName)."' AND is_blocked = 0");
         } else {
             $success = DB::query("UPDATE webchat_users SET is_blocked = 0 WHERE name = '".DB::esc($sUserName)."' AND is_blocked = 1");
+        }
+
+        return array('result' => ($success == false) ? false : true);
+    }
+
+    /*
+    ================
+    unblockUser()
+    ================
+    */
+    public static function activateUser($sUserName)
+    {
+        return self::privSetActivatedState($sUserName, true);
+    }
+
+    /*
+    ================
+    privSetActivatedState()
+    ================
+    */
+    private static function privSetActivatedState($sUserName, $bActivatedState)
+    {
+        $success = null;
+
+        if($bActivatedState){
+            $success = DB::query("UPDATE webchat_users SET is_activated = 1 WHERE name = '".DB::esc($sUserName)."' AND is_activated = 0");
+        } else {
+            $success = DB::query("UPDATE webchat_users SET is_activated = 0 WHERE name = '".DB::esc($sUserName)."' AND is_activated = 1");
         }
 
         return array('result' => ($success == false) ? false : true);

@@ -342,6 +342,34 @@ p.noChats,
     font-size: 11px;
 }
 
+#newUsers{
+    background-color: rgba(0,0,0,0.3);
+    margin-bottom: 10px;
+    width: 100%;
+    float: right;
+}
+
+#newUsers .user{
+    background:url('http://www.gravatar.com/avatar/3b3be63a4c2a439b013787725dfce802?size=30') no-repeat 1px 1px #444444;
+    border:1px solid #111111;
+    float:left;
+    height:32px;
+    margin:10px 0 0 10px;
+    width:32px;
+}
+
+#newUsers .count{
+    clear:both;
+    font-size:12px;
+    padding:10px;
+    text-align:center;
+    text-shadow:1px 1px 0 #111111;
+}
+
+#newUsers .count{
+    font-size: 11px;
+}
+
 /* Bottom Bar */
 
 
