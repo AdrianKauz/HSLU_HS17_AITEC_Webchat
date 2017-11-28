@@ -26,11 +26,11 @@
             </div>
 
             <div id="chatBottomBar" class="rounded">
-                <div class="tip"></div>
-
                 <form id="submitForm" method="post" action="">
-                    <input id="chatText" name="chatText" class="rounded" maxlength="255" />
-                    <input type="submit" class="blueButton" value="Submit" />
+                    <div id="chatInputBorder">
+                        <textarea id="chatText" name="chatText" maxlength="255" autocomplete="off" rows="3"></textarea>
+                    </div>
+                    <input id="chatSubmit" type="submit" class="loginButton" value="Submit" />
                 </form>
             </div>
         </div>
@@ -39,14 +39,16 @@
     <div id="LoginContainer">
         <div id="loginField">
             <div id="loginFieldTitle">Welcome user!</div>
+            <img src="img/login_icon.png" height="100" width="100">
             <form id="loginForm" method="post" action="">
                 <div id="loginInputField">
                     <input type="hidden" id="loginMode" name="loginMode"/>
                     <input type="text" id="name" name="name" autocomplete="off" maxlength="16" />
                     <input type="text" id="email" name="email" autocomplete="off" />
                 </div>
-                <input type="submit" id="RegisterButton" value="Register" />
-                <input type="submit" id="LoginButton" value="Login" />
+                <div id="loginButtonField">
+                    <input class="loginButton" type="submit" id="buttonRegister" value="Register" /><input class="loginButton" type="submit" id="buttonLogin" value="Login" />
+                </div>
             </form>
         </div>
     </div>
