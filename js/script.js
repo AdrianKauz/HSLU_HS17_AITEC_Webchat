@@ -3,14 +3,29 @@ $(document).ready(function(){
 	chat.init();
 });
 
-$('#RegisterButton').click(function(){
+$('#buttonRegister').click(function(){
     $('#loginMode').val('register');
 });
 
-$('#LoginButton').click(function(){
+$('#buttonLogin').click(function(){
     $('#loginMode').val('login');
 });
 
+$('#chatText').keypress(function(event){
+    if(event.which === 13){
+        if(!event.shiftKey){
+            chat.submit();
+        } else {
+            if($(this).val().split("\n").length > 2){
+                return false;
+            }
+        }
+    }
+});
+
+$('#chatText').bind('paste', function(event) {
+
+});
 
 var chat = {
     // data for the current user:
@@ -20,7 +35,8 @@ var chat = {
     },
 
     activity : {
-        loginFormIsWorking : false
+        loginFormIsWorking : false,
+        chatFormIsWorking : false
     },
 
 	// data holds variables for use in the class:
@@ -69,79 +85,12 @@ var chat = {
             chat.activity.loginFormIsWorking = false;
 
             return false;
-
-
-
-
-
-			//alert($(this).serializeArray());
-
-
-			//alert($(this).serializeArray()[0].name);
-
-
-
-			
-			// Using our chatPOST wrapper function (defined in the bottom):
-			$.chatPOST('login',$(this).serialize(),function(r){
-				working = false;
-
-				if(r.error){
-					chat.displayError(r.error);
-				}
-				else{
-                    $.chatGET('userIsAdmin',function(r){
-                        if(r.result == 1){
-                            chat.currentUser.is_admin = true;
-                        }
-                    });
-
-					chat.login(r.name,r.gravatar);
-                }
-			});
-
-			return false;
 		});
 		
 		// Submitting a new chat entry:
 		$('#submitForm').submit(function(){
-			
-			var text = $('#chatText').val();
-			
-			if(text.length == 0){
-				return false;
-			}
-			
-			if(working) return false;
-			working = true;
-			
-			// Assigning a temporary ID to the chat:
-			var tempID = 't'+Math.round(Math.random()*1000000),
-				params = {
-					id			: tempID,
-					author		: chat.data.name,
-					gravatar	: chat.data.gravatar,
-					text		: text.replace(/</g,'&lt;').replace(/>/g,'&gt;')
-				};
-
-			// Using our addChatLine method to add the chat
-			// to the screen immediately, without waiting for
-			// the AJAX request to complete:
-			chat.addChatLine($.extend({},params));
-			
-			// Using our chatPOST wrapper method to send the chat
-			// via a POST AJAX request:
-			$.chatPOST('submitChat',$(this).serialize(),function(r){
-				working = false;
-				
-				$('#chatText').val('');
-				$('div.chat-' + tempID).remove();
-				
-				params['id'] = r.insertID;
-				chat.addChatLine($.extend({},params));
-			});
-			
-			return false;
+            chat.submit();
+		    return false;
 		});
 		
 		// Logging the user out:
@@ -186,6 +135,49 @@ var chat = {
 			}
         });
 	},
+
+    submit : function()
+    {
+        var text = $('#chatText').val();
+
+        if(text.length === 0){
+            return false;
+        }
+
+        if(chat.activity.chatFormIsWorking) {
+            return false;
+        } else {
+            chat.activity.chatFormIsWorking = true;
+        }
+
+        // Assigning a temporary ID to the chat:
+        var tempID = 't'+Math.round(Math.random()*1000000),
+            params = {
+                id			: tempID,
+                author		: chat.data.name,
+                gravatar	: chat.data.gravatar,
+                text		: text.replace(/</g,'&lt;').replace(/>/g,'&gt;')
+            };
+
+        // Using our addChatLine method to add the chat
+        // to the screen immediately, without waiting for
+        // the AJAX request to complete:
+        chat.addChatLine($.extend({},params));
+
+        // Using our chatPOST wrapper method to send the chat
+        // via a POST AJAX request:
+        $.chatPOST('submitChat',$('#submitForm').serialize(),function(r){
+            chat.activity.chatFormIsWorking = false;
+
+            $('#chatText').val('');
+            $('div.chat-' + tempID).remove();
+
+            params['id'] = r.insertID;
+            chat.addChatLine($.extend({},params));
+        });
+
+
+    },
 
 	// The login method hides displays the user's login data and shows the submit form:
 	login : function(name,gravatar)
@@ -238,7 +230,7 @@ var chat = {
 				arr = [
 					'<div class="chat chat-',params.id,'"><span class="gravatar"><img src="',params.gravatar,
 					'" width="23" height="23" onload="this.style.visibility=\'visible\'" />','</span><span class="author">',params.author,
-					'</span><span class="time">',params.time,'</span><span class="text">',params.text,'</span></div>'];
+					'</span><span class="time">',params.time,'</span><span class="text">',params.text.split("\n").join("<br>"),'</span></div>'];
 			    break;
 			case 'user':
 			    if(chat.currentUser.is_admin){
@@ -340,7 +332,7 @@ var chat = {
     {
 		$.chatGET('getChats',{lastID: chat.data.lastID},function(r){
 			
-			for(var i=0;i<r.chats.length;i++){
+			for(var i = 0; i < r.chats.length; i++){
 				chat.addChatLine(r.chats[i]);
 			}
 			
