@@ -17,7 +17,7 @@ class ChatUser extends ChatBase
 	public function save()
     {
 		DB::query("
-			INSERT INTO webchat_users (name, is_active, is_admin, $is_activated, gravatar)
+			INSERT INTO webchat_users (name, is_active, is_admin, is_activated, gravatar)
 			VALUES (
 				'".DB::esc($this->name)."',
 				'1',
